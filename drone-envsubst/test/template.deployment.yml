@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ${DRONE_REPO_OWNER}-${DRONE_REPO_NAME}
+spec:
+  selector:
+    matchLabels:
+      run: ${DRONE_REPO_OWNER}-${DRONE_REPO_NAME}
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        run: florian
+    spec:
+      containers:
+      - name: ${DRONE_REPO_OWNER}-${DRONE_REPO_NAME}
+        image: ${ECR_REPOSITORY_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
