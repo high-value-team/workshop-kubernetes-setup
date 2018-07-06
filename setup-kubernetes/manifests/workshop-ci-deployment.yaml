@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ci
+spec:
+  selector:
+    matchLabels:
+      run: ci
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        run: ci
+    spec:
+      containers:
+      - name: ci
+        image: hvt1/workshop-ci:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+          - mountPath: /var/run/docker.sock
+            name: docker-socket
+        envFrom:
+          - configMapRef:
+              name: workshop-ci-config
+              optional: false
+      volumes:
+      - name: docker-socket
+        hostPath:
+          path: /var/run/docker.sock
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ci
+  labels:
+    run: ci
+spec:
+  ports:
+  - port: 80
+    targetPort: 8080
+    protocol: TCP
+  selector:
+    run: ci
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ci
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+  - host: ci.hvt.zone
+    http:
+      paths:
+      - path: "/"
+        backend:
+          serviceName: ci
+          servicePort: 80

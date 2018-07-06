@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: hello
+  labels:
+    run: hello
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+  selector:
+    run: hello
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello
+spec:
+  selector:
+    matchLabels:
+      run: hello
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        run: hello
+    spec:
+      containers:
+      - name: hello
+        image: hvt1/hello
+        ports:
+        - containerPort: 80
