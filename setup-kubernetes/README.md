@@ -38,11 +38,23 @@ kubectl create -f manifests/hello-ingress.yaml
 kubectl create -f manifests/awsecr-cred-deployment.yaml
 
 # install hvt ci
+configure manifests/workshop-ci-config.yaml using kubeconfig_ip
 kubectl create -f manifests/workshop-ci-config.yaml
 kubectl create -f manifests/workshop-ci-deployment.yaml
-
 ```
 
+**How to BASE64_ENCODE values?**
+
+awsecr-cred-deployment.yaml.tpl:
+```
+data:
+  AWS_ACCESS_KEY_ID: BASE64_ENCODED(AWS_ACCESS_KEY_ID)
+``` 
+
+To BASE64_ENCODE values use the following statement:
+``` 
+echo -n "xxx" | base64 | pbcopy
+```
 
 **How to cleanup all EC2 resources?**
 ```
